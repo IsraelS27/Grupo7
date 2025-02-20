@@ -108,3 +108,12 @@ CREATE TABLE DISTRITO (
   IdProvincia varchar(4) NOT NULL,
   IdDepartamento varchar(2) NOT NULL
 )
+
+CREATE TABLE PEDIDOS (
+    PedidoID INT IDENTITY(1,1) PRIMARY KEY,
+    FechaPedido DATETIME DEFAULT GETDATE(),
+    EstadoPedido VARCHAR(50) CHECK (EstadoPedido IN ('Pendiente', 'En Proceso', 'Completado', 'Cancelado')),
+    Total DECIMAL(10,2) NOT NULL,
+    MetodoPago VARCHAR(50),
+    DireccionEnvio VARCHAR(255)
+);
