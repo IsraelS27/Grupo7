@@ -108,7 +108,7 @@ CREATE TABLE DISTRITO (
   IdProvincia varchar(4) NOT NULL,
   IdDepartamento varchar(2) NOT NULL
 )
-
+go
 CREATE TABLE PEDIDOS (
     PedidoID INT IDENTITY(1,1) PRIMARY KEY,
     FechaPedido DATETIME DEFAULT GETDATE(),
@@ -116,4 +116,31 @@ CREATE TABLE PEDIDOS (
     Total DECIMAL(10,2) NOT NULL,
     MetodoPago VARCHAR(50),
     DireccionEnvio VARCHAR(255)
+)
+go
+CREATE TABLE ENVIO (
+    IdEnvio INT IDENTITY(1,1) PRIMARY KEY,
+    IdPedido INT REFERENCES PEDIDOS(PedidoID),
+    IdUsuario INT REFERENCES USUARIO(IdUsuario),
+    FechaEnvio DATETIME DEFAULT GETDATE(),
+    EstadoEnvio VARCHAR(50) CHECK (EstadoEnvio IN ('Pendiente', 'En Camino', 'Entregado'))
 );
+
+CREATE TABLE PAGO (
+    IdPago INT IDENTITY(1,1) PRIMARY KEY,
+    IdCompra INT REFERENCES COMPRA(IdCompra),
+    MetodoPago VARCHAR(50),
+    Monto DECIMAL(10,2) NOT NULL,
+    EstadoPago VARCHAR(50) CHECK (EstadoPago IN ('Pendiente', 'Pagado', 'Rechazado')),
+    FechaPago DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE RESENAS (
+    IdResena INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuario INT REFERENCES USUARIO(IdUsuario),
+    IdProducto INT REFERENCES PRODUCTO(IdProducto),
+    Calificacion INT CHECK (Calificacion BETWEEN 1 AND 5),
+    Comentario VARCHAR(500),
+    FechaResena DATETIME DEFAULT GETDATE()
+);
+
