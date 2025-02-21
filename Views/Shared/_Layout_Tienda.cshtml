@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PideYA</title>
+    <link rel="icon" type="image/png" href="../Imagenes/Logo/pide.ico" />
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/PluginsCSS")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        /* Estilo para la imagen de fondo */
+        body {
+            background-image: url('../Imagenes/Logo/plomo.jpg');
+            background-size: cover; /* Para que la imagen cubra todo el fondo */
+            background-position: center; /* Centra la imagen */
+            background-repeat: no-repeat; /* Evita que la imagen se repita */
+            background-attachment: fixed; /* Hace que el fondo se mantenga fijo al hacer scroll */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-dark fixed-top" style="background-color: #f39c12; ">
+
+        <div class="container-fluid text-center">
+            <!-- Navbar Brand-->
+            <div class="navbar-brand">
+                <a href="@Url.Action("Index", "Tienda")">
+                    <img src="~/Imagenes/Logo/PideYAcele.png" alt="Logo" style="width: 100px; height: auto;">
+                </a>
+            </div>
+
+
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-dark btn-ver-categoria" id="sidebarToggle" href="#!" style="background-color: #000;">
+                <i class="fas fa-bars"></i> Ver Categorías
+            </button>
+
+            <div class="text-center text-white" style="margin: 0 auto;">
+                <h1 class="display-4 fw-bolder" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">PideYA</h1>
+                <p class="lead fw-normal mb-0" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);">"Lo que quieras, en un solo pedido"</p>
+            </div>
+        </div>
+
+        <!-- Navbar-->
+        @{
+            if (((ProyectoTest.Models.Usuario)Session["Usuario"]).EsAdministrador == false)
+            {
+                <form action="@Url.Action("Carrito","Tienda")" method="post" class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                    <button class="btn btn-close-white" type="submit">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill contador-carrito">0</span>
+                    </button>
+                </form>
+
+                <ul class="navbar-nav me-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("SobreNosotros", "Tienda")">Sobre Nosotros</a> <!-- Botón "Sobre Nosotros" -->
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("RedesSociales", "Tienda")">Redes Sociales</a> <!-- Botón "Redes Sociales" -->
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("Index","Tienda")">Ir a Tienda</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Compras","Tienda")">Mis Compras</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="@Url.Action("CerrarSesion","Tienda")">Cerrar Sesión</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            }
+        }
+
+    </nav>
+
+    <main class="container-fluid">
+        @RenderBody()
+    </main>
+
+    <div class="position-fixed top-0 end-0 p-3 mt-5" style="z-index: 5">
+        <div id="toast-carrito" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+            <div class="toast-body bg-success text-white">
+                <div class="d-flex">
+                    <i class="fas fa-check fa-2x"></i> <label style="margin-left: 10px !important">Se añadió al carrito!</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed top-0 end-0 p-3 mt-5" style="z-index: 5">
+        <div id="toast-alerta" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+            <div class="toast-body bg-danger text-white">
+                <div class="d-flex">
+                    <i class="fas fa-exclamation-circle fa-2x"></i> <label id="mensaje-error" class="ml-2" style="margin-left: 10px !important">Error</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Content/PluginsJS")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            obtenerCantidad();
+        })
+
+        function obtenerCantidad() {
+            jQuery.ajax({
+                url: '@Url.Action("CantidadCarrito", "Tienda")',
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $(".contador-carrito").text(data.respuesta);
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        }
+
+        $(document).on('click', '.btn-agregar-carrito', function (event) {
+            var request = {
+                oCarrito: {
+                    oProducto: { IdProducto: $(this).data("idproducto")  }
+                }
+            }
+
+            jQuery.ajax({
+                url: '@Url.Action("InsertarCarrito", "Tienda")',
+                type: "POST",
+                data: JSON.stringify(request),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    var actual = parseInt($(".contador-carrito").text());
+                    if (data.respuesta != 0) {
+                        actual = actual + 1;
+                        $(".contador-carrito").text(actual);
+                        $('#toast-carrito').toast('show');
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
