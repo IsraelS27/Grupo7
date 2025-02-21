@@ -12,9 +12,7 @@ namespace ProyectoTest.Logica
     {
         private static UsuarioLogica _instancia = null;
 
-        public UsuarioLogica()
-        {
-
+        public UsuarioLogica()    {
         }
 
         public static UsuarioLogica Instancia
