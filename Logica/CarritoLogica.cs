@@ -29,7 +29,6 @@ namespace ProyectoTest.Logica
                 {
                     _instancia = new CarritoLogica();
                 }
-
                 return _instancia;
             }
         }
@@ -74,7 +73,6 @@ namespace ProyectoTest.Logica
 
                     oConexion.Open();
                     respuesta = Convert.ToInt32(cmd.ExecuteScalar().ToString());
-
                 }
                 catch (Exception ex)
                 {
@@ -110,12 +108,10 @@ namespace ProyectoTest.Logica
                                     oMarca = new Marca() { Descripcion = dr["Descripcion"].ToString() },
                                     Precio = Convert.ToDecimal(dr["Precio"].ToString(), new CultureInfo("es-PE")),
                                     RutaImagen = dr["RutaImagen"].ToString()
-                                },
-                                
+                                },                                
                             });
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -143,7 +139,6 @@ namespace ProyectoTest.Logica
 
                     oConexion.Open();
                     cmd.ExecuteNonQuery();
-
                 }
                 catch (Exception ex)
                 {
@@ -161,7 +156,6 @@ namespace ProyectoTest.Logica
                 SqlCommand cmd = new SqlCommand("sp_ObtenerCompra", oConexion);
                 cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
                 cmd.CommandType = CommandType.StoredProcedure;
-
 
                 try
                 {
@@ -209,8 +203,5 @@ namespace ProyectoTest.Logica
                 }
             }
         }
-
-
-
     }
 }
